@@ -16,6 +16,11 @@
     <h3 class="mb-4 text-center">Mani darbi</h3>
 
     <div class="input-group mb-3">
+        <select id="izvele" class="form-select form-select-sm w-auto flex-grow-0" aria-label=".form-select-lg example">
+            <option value="zema">Zema</option>
+            <option value="videja">Videja</option>
+            <option value="liela">SVARIGS!</option>
+        </select>
       <input id="task-input" type="text" class="form-control" placeholder="Ievadi jaunu darbu" >
       <button onclick="addTask()" class="btn btn-primary">Pievienot</button>
     </div>
@@ -58,6 +63,20 @@ function addTask() {
     li.remove();
     saveData();
     });
+    
+    const izvele = document.getElementById("izvele").value;
+     if (izvele === "liela") {
+    li.classList.add("list-group-item-danger"); // sarkans
+    saveData();
+      } 
+      else if (izvele === "videja") {
+        li.classList.add("list-group-item-warning"); // dzeltens
+        saveData();
+      } 
+      else {
+        li.classList.add("list-group-item-success"); // zaļš
+        saveData();
+      }
 
 saveData();
 }
@@ -70,8 +89,17 @@ function saveData(){
     const text = li.querySelector(".task-text").textContent;
     const done = li.querySelector(".task-text")
       .classList.contains("text-decoration-line-through");
+      
+      const priority = "low";
 
-    tasks.push({text, done});
+    if (li.classList.contains("list-group-item-danger")) {
+      priority = "high";
+    } 
+    else if (li.classList.contains("list-group-item-warning")) {
+      priority = "medium";
+    }
+
+    tasks.push({text, done, priority});
   });
 
   localStorage.setItem("tasks", JSON.stringify(tasks));
