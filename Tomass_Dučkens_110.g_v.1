@@ -34,9 +34,9 @@ function addTask() {
   li.className = "list-group-item d-flex justify-content-between align-items-center";
 
   li.innerHTML = `
-    <span>${input.value}</span>
+    <span class="task-text">${input.value}</span>
     <button class="btn btn-sm btn-outline-danger"
-            onclick="this.parentElement.remove()">
+            onclick="this.parentElement.remove(); saveData();">
       Dzēst
     </button>
   `;
@@ -44,16 +44,62 @@ function addTask() {
   document.getElementById("task-list").appendChild(li);
   input.value = "";
   
-    li.addEventListener("click",function(event){
-    console.log("AAAAAAAAAAAAA");
-    //li.classList.toggle("text-decoration-line-through");
-    if (event.target.closest('li')) {
-       li.classList.toggle("text-decoration-line-through");
-    }
-    // do something
+  
+    const text = li.querySelector(".task-text");
+    const deleteBtn = li.querySelector("button");
+  
+    text.addEventListener("click", function () {
+      text.classList.toggle("text-decoration-line-through");
+      saveData();
+    });
+    
+
+    deleteBtn.addEventListener("click", function () {
+    li.remove();
+    saveData();
     });
 
+saveData();
 }
+
+function saveData(){
+  const tasks = [];
+  const items = document.querySelectorAll("#task-list li");
+
+  items.forEach(li => {
+    const text = li.querySelector(".task-text").textContent;
+    const done = li.querySelector(".task-text")
+      .classList.contains("text-decoration-line-through");
+
+    tasks.push({text, done});
+  });
+
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+
+function loadData(){
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const input = document.getElementById("task-input");
+
+  tasks.forEach(task => {
+    input.value = task.text;
+    addTask();
+
+    const last = document.querySelector("#task-list li:last-child");
+    const text = last.querySelector(".task-text");
+
+    if(task.done){
+      text.classList.add("text-decoration-line-through");
+    }
+  });
+
+  input.value = "";
+}
+
+
+window.addEventListener("DOMContentLoaded", loadData);
+
 
 
 
